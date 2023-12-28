@@ -313,7 +313,7 @@ if isWithinDateRange
         else
             break
 
-    // Check if there are at least one consecutive green candle before the redd
+    // Check if there are at least one consecutive green candle before the reddd
     if lastCandleIsRed and low[1] > lowestGreenLow and countGreen >= greenNum and not orderCheck and array.size(profitUpdater) - 4 < maxPendingOrder and rsiValue < 50  and open < smaValue//  and open > smaValue2 //and smaValue > smaValue2// and rsiValue < 50 and open > smaValue and allowOrder > 0 and allowOrder < localMaxOrder // and close[1] > open[25] and close[26] > open[50]
         // Track the high and low of the red candle
         redHigh := high[1]
