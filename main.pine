@@ -10,7 +10,7 @@ endYear = input(2024, "End Year")
 endMonth = input(12, "End Month")
 endDay = input(21, "End Day")
 
-// Convert the start and end dates to Unix timestampsS
+// Convert the start and end dates to Unix timestamp
 startDate = timestamp(startYear, startMonth, startDay, 0, 0)
 endDate = timestamp(endYear, endMonth, endDay, 0, 0)
 
@@ -58,7 +58,8 @@ var float averageDollar = 0.
 var float fee = 0.
 var float netProfit = 0.
 
-var barTimeFormatted = str.format_time(time, "d-M-yy HH:mm", "UTC")
+// variable to format the timestamp
+barTimeFormatted = str.format_time(time, "d-M-yy HH:mm", "UTC")
 
 // Variables to manage order settings
 var float maxProfit = 10000 //The max pending profit - adjust tp
@@ -90,6 +91,9 @@ var float[] profitUpdaterSaved = array.new_float()
 var float[] lossSaved = array.new_float()
 var float[] orderDollarList = array.new_float()
 var float[] orderSizeList = array.new_float()
+var string[] orderDate = array.new_string()
+var string[] profitDate = array.new_string()
+var string[] lossDate = array.new_string()
 
 var float pendingProfit = 0.
 var float pendingProfit2 = 0.
@@ -131,6 +135,8 @@ if isWithinDateRange
                 array.remove(profitUpdater, k)
                 // Display the number of available orders after removing one
                 alert("available orders: " + str.tostring(((array.size(profitUpdater) + 4)/4) - 1))
+                // add the current date to profitDate list
+                array.push(profitDate, barTimeFormatted)
             
                 
             // Check if the current low price is less than or equal to stop loss
@@ -157,6 +163,8 @@ if isWithinDateRange
                 array.remove(profitUpdater, k)
                 // Display the number of available orders after removing one
                 alert("available orders: " + str.tostring(((array.size(profitUpdater) + 4)/4) - 1))
+                // add the current date to lossDate list
+                array.push(lossDate, barTimeFormatted)
                 
             else
                 k := k + 4
@@ -189,7 +197,11 @@ if isWithinDateRange
             orderDollar := orderPrice * orderSizeTotal
             array.push(orderDollarList, orderDollar)
             array.push(orderSizeList, orderSizeTotal)
-            // Check if the take profit is hit by a single bar and update total profit
+            // add current date to orderDate list
+            array.push(orderDate, barTimeFormatted)
+
+            // Check if the take profit or stop loss is hit by a single bar and update total profit
+            // for take profit
             if high[1] >= takeProfit3
                 //totalProfit := totalProfit + (profitMultiplier * maxLoss)
                 totalProfit := totalProfit + (orderSize3 * (takeProfit3-orderPrice))
@@ -226,7 +238,11 @@ if isWithinDateRange
 
                 // Display the number of available orders after removing one
                 alert("available orders: " + str.tostring(((array.size(profitUpdater) + 4)/4) - 1))
+                
+                //add current date to profitDate
+                array.push(profitDate, barTimeFormatted)
 
+            // for stop loss
             else if low[1] <= stopLoss and isRed(1)
                 //totalProfit := totalProfit - maxLoss
                 totalProfit := totalProfit + (orderSizeTotal * (stopLoss-orderPrice))
@@ -238,6 +254,9 @@ if isWithinDateRange
         
                 // Display the number of available orders after removing one
                 alert("available orders: " + str.tostring(((array.size(profitUpdater) + 4)/4) - 1))
+
+                // add current date to lossDate list
+                array.push(lossDate, barTimeFormatted)
 
     // Check if the current low is lower than the lowest green low and cancel the order
     if orderCheck
@@ -403,20 +422,23 @@ if isWithinDateRange
     averageDollar := array.sum(orderDollarList)/totalOrders
 
 //alert( "Total Orders: " + str.tostring(totalOrders)  + "\n" + "  pending orders: " + str.tostring(((array.size(profitUpdater) + 4)/4) - 1) + "    " + str.tostring(profitUpdater) )
-///alert("profit history: " + str.tostring(profitUpdaterSaved))
-//alert("loss history: " + str.tostring(lossSaved))
-//alert("order dollar: " + str.tostring(orderDollarList))
+///alert("profit list: " + str.tostring(profitUpdaterSaved))
+//alert("loss list: " + str.tostring(lossSaved))
+//alert("order dollar list: " + str.tostring(orderDollarList))
 
 //alert("average dollar: " + str.tostring(averageDollar))
-//alert("order size: " + str.tostring(orderSizeList))
-//alert(barTimeFormatted)
+//alert("order size list: " + str.tostring(orderSizeList))
+alert(barTimeFormatted)
 //alert("Total profit: " + str.tostring(totalProfitTaken) + "average dollar: "+ str.tostring(averageDollar) + "\n" + "net profit: " + str.tostring(netProfit))
 //alert("pendingProfit: " + str.tostring(pendingProfit) + "Total Orders: " + str.tostring(totalOrders))
 //alert("Total profit: " + str.tostring(totalProfitTaken) + "pendingProfit: " + str.tostring(pendingProfit))
-//alert("pending orders: " + str.tostring(profitUpdater))
+//alert("pending orders list: " + str.tostring(profitUpdater))
 alert("Total profit: " + str.tostring(totalProfitTaken))
 alert("net profit: " + str.tostring(netProfit))
 alert( "Total Orders: " + str.tostring(totalOrders))
+alert("order dates: " + str.tostring(orderDate))
+alert("profit dates: " + str.tostring(profitDate))
+alert("loss dates: " + str.tostring(lossDate))
 //alert("pendingProfit: " + str.tostring(pendingProfit))
 //alert("Feeless profit: " + str.tostring(totalProfit))
 //alert( "Total Orders: " + str.tostring(totalOrders))
